@@ -1,0 +1,15 @@
+# Ignorar claves de seguridad
+*.pem
+*.key
+.env
+
+# Ignorar carpetas temporales de Terraform
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate
+terraform.tfstate.backup
+terraform_log
+
+# Ignorar sistema operativo
+.DS_Store
+Thumbs.db
