@@ -1,7 +1,7 @@
 <?php
     include "seguridad.php";
     include "conexion.php";
-    mysqli_select_db($conexion, "proyecto2");
+    mysqli_select_db($conexion, "mi_base_datos");
 
     // 1. VERIFICACIÓN DE ROL OTRA VEZ (Para evitar accesos directos por URL)
     $rol = strtolower($_SESSION['rol']);

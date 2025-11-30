@@ -2,7 +2,7 @@
     include "seguridad.php"; // Protegemos la página
     include "header.php";
     include "conexion.php";
-    mysqli_select_db($conexion, "proyecto2");
+    mysqli_select_db($conexion, "mi_base_datos");
 
     // Recogemos el ID del torneo de la URL y el ID del usuario de la sesión
     $id_torneo = $_GET['id_torneo'];

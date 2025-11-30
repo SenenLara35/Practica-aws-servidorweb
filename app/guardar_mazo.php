@@ -1,7 +1,7 @@
 <?php
     include "seguridad.php"; // Necesario para acceder a $_SESSION
     include "conexion.php";
-    mysqli_select_db($conexion, "proyecto2");
+    mysqli_select_db($conexion, "mi_base_datos");
 
     // 1. RECIBIMOS LOS DATOS DEL FORMULARIO
     $nom = mysqli_real_escape_string($conexion, $_POST["nombre"]);

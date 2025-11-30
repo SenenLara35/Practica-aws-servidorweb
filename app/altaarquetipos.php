@@ -13,7 +13,7 @@
     include"header.php";
 ?>
 <?php
-    mysqli_select_db($conexion, "proyecto2");
+    mysqli_select_db($conexion, "mi_base_datos");
 
     $nom=$_POST["nom"];
     // --- PARTE NUEVA: VERIFICACIÓN DE DUPLICADO ---

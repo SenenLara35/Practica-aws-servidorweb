@@ -1,7 +1,7 @@
 <?php
     include "seguridad.php";
     include "conexion.php";
-    mysqli_select_db($conexion, "proyecto2");
+    mysqli_select_db($conexion, "mi_base_datos");
 
     // 1. RECIBIR DATOS
     $datos_combinados = $_POST['datos_partida']; // "ID_TORNEO|ID_RIVAL"

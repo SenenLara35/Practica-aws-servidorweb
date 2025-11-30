@@ -6,7 +6,7 @@ include "seguridad.php";
 include "header.php";
 include "conexion.php";
 
-mysqli_select_db($conexion, "proyecto2");
+mysqli_select_db($conexion, "mi_base_datos");
 $id_usuario_logueado = $_SESSION['id_usuario'];
 ?>
 

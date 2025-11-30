@@ -2,7 +2,7 @@
     include "seguridad.php";
     include "header.php";
     include "conexion.php";
-    mysqli_select_db($conexion, "proyecto2");
+    mysqli_select_db($conexion, "mi_base_datos");
 
     // Variable para comprobar si es admin rápidamente
     $es_admin = (isset($_SESSION['rol']) && strtolower($_SESSION['rol']) == 'admin');

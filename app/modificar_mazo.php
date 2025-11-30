@@ -9,7 +9,7 @@
 <?php
     include "conexion.php";
     include "header.php";
-    mysqli_select_db($conexion, "proyecto2");
+    mysqli_select_db($conexion, "mi_base_datos");
 
     $id_mazo = $_GET['id_mazo'];
 

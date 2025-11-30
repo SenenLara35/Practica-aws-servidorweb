@@ -2,7 +2,7 @@
     include "seguridad.php";
     include "header.php";
     include "conexion.php";
-    mysqli_select_db($conexion, "proyecto2");
+    mysqli_select_db($conexion, "mi_base_datos");
 
     // 1. SEGURIDAD EXTREMA: SOLO ADMIN
     // Si alguien intenta entrar escribiendo la URL y no es admin, fuera.

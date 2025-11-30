@@ -1,6 +1,6 @@
 <?php
     include "conexion.php";
-    mysqli_select_db($conexion, "proyecto2");
+    mysqli_select_db($conexion, "mi_base_datos");
 
     // Recibimos los datos
     $user = mysqli_real_escape_string($conexion, $_POST['usuario']);

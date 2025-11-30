@@ -1,6 +1,6 @@
 <?php
     include "conexion.php";
-    mysqli_select_db($conexion, "proyecto2");
+    mysqli_select_db($conexion, "mi_base_datos");
 
     // Obtenemos el ID de la URL (listamazos.php?id_mazo=5)
     if(isset($_GET['id_mazo'])){

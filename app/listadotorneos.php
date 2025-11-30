@@ -6,7 +6,7 @@
     include "header.php";
     include "conexion.php";
     
-    mysqli_select_db($conexion, "proyecto2");
+    mysqli_select_db($conexion, "mi_base_datos");
 
     // 3. RECUPERAR DATOS DEL USUARIO LOGUEADO
     // Usamos el operador de fusión null (??) por seguridad si la sesión fallara

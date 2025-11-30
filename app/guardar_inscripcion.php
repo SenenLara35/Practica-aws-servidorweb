@@ -1,7 +1,7 @@
 <?php
     include "seguridad.php";
     include "conexion.php";
-    mysqli_select_db($conexion, "proyecto2");
+    mysqli_select_db($conexion, "mi_base_datos");
 
     // Recibimos los datos del formulario (apuntartorneo.php)
     $id_torneo = $_POST['id_torneo'];

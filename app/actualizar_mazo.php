@@ -1,6 +1,6 @@
 <?php
     include "conexion.php";
-    mysqli_select_db($conexion, "proyecto2");
+    mysqli_select_db($conexion, "mi_base_datos");
 
     // Recibimos datos
     $id_mazo = $_POST['id_mazo'];

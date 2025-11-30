@@ -2,7 +2,7 @@
     include "seguridad.php"; // Importante: Verifica que estás logueado
     include "header.php";
     include "conexion.php";
-    mysqli_select_db($conexion, "proyecto2");
+    mysqli_select_db($conexion, "mi_base_datos");
 ?>
 
 <div class="main-content">

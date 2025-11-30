@@ -11,7 +11,7 @@
     <?php
         include("conexion.php");
         include("header.php"); // Se asume que aquí inicia la sesión si es necesario
-        mysqli_select_db($conexion, "proyecto2");
+        mysqli_select_db($conexion, "mi_base_datos");
 
         // --- LÓGICA DEL BUSCADOR ---
         $busqueda = "";

@@ -1,7 +1,7 @@
 <?php
     session_start();
     include "conexion.php";
-    mysqli_select_db($conexion, "proyecto2");
+    mysqli_select_db($conexion, "mi_base_datos");
 
     // Recibimos datos del formulario y limpiamos caracteres raros (Seguridad básica)
     $user = mysqli_real_escape_string($conexion, $_POST['usuario']);
