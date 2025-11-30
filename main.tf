@@ -159,7 +159,7 @@ resource "aws_instance" "instancia1" {
   
   # IMPORTANTE: Aquí pones el nombre de la clave que creaste en AWS en el Paso 1
   # Si la llamaste diferente a "clave-practica", cambia el nombre aquí abajo.
-  key_name = "clave-para-mi-servidor"
+  key_name = "clave-final"
 
   # El script debe estar en la misma carpeta con nombre "script.sh"
   user_data = file("script.sh")
@@ -171,4 +171,72 @@ resource "aws_instance" "instancia1" {
 
 output "public_ip" {
   value = aws_instance.instancia1.public_ip
+}
+# ==========================================
+# PARTE NUEVA: INFRAESTRUCTURA DE LA VPC B (DATOS)
+# ==========================================
+
+# 1. Security Group para la Base de Datos (En VPC B)
+resource "aws_security_group" "db_sg" {
+  name        = "db-server-sg"
+  description = "Permitir MySQL solo desde VPC A"
+  vpc_id      = aws_vpc.vpc_b.id  # ¡Importante! Esto va en la VPC B
+
+  # Regla de entrada: MySQL (3306)
+  ingress {
+    description = "MySQL from VPC A"
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    # AQUÍ ESTÁ LA MAGIA DEL PEERING:
+    # Solo permitimos entrar a quien venga de la red de la VPC A (10.1.0.0/16)
+    cidr_blocks = ["10.1.0.0/16"] 
+  }
+
+  # SSH (Opcional, para debug, restringir a tu IP si quieres)
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+
+  # Salida (Internet para instalar Docker)
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = { Name = "DB-Server-SG" }
+}
+
+# 2. La Instancia de Base de Datos
+resource "aws_instance" "db_server" {
+  ami           = "ami-0c02fb55956c7d316" # Amazon Linux 2
+  instance_type = "t2.micro"
+
+  # Usamos la pública para poder instalar Docker gratis (sin NAT Gateway),
+  # pero el Security Group la protege.
+  subnet_id                   = aws_subnet.subnet_public_b.id
+  vpc_security_group_ids      = [aws_security_group.db_sg.id]
+  associate_public_ip_address = true
+  
+  # Reutilizamos la misma clave para ahorrar líos
+  key_name = "clave-final" 
+
+  # Usamos el NUEVO script de base de datos
+  user_data = file("script_db.sh")
+
+  tags = {
+    Name = "Servidor-BaseDatos-VPCB"
+  }
+}
+
+# Output para saber la IP PRIVADA de la base de datos
+# (Esta es la IP que pondremos en el código PHP)
+output "db_private_ip" {
+  description = "IP Privada de la Base de Datos (Usar esta en PHP)"
+  value       = aws_instance.db_server.private_ip
 }
