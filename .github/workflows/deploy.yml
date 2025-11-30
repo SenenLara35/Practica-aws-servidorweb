@@ -1,33 +1,31 @@
 name: Despliegue a AWS EC2
 
-# ¿Cuándo se ejecuta esto?
 on:
   push:
     branches:
-      - main  # Cada vez que subas cambios a la rama main
+      - main
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest # GitHub nos presta un servidor Ubuntu temporal
+    runs-on: ubuntu-latest
 
     steps:
-    # 1. Descargar tu código en el servidor de GitHub
+    # 1. Descargar el código
     - name: Checkout del código
       uses: actions/checkout@v3
 
-    # 2. Copiar los archivos de tu web (carpeta website) al servidor AWS
-    # Usamos una acción famosa llamada "appleboy/scp-action" para transferir archivos
+    # 2. Copiar archivos (Corregido para buscar en la carpeta 'app')
     - name: Copiar archivos al servidor
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
-        source: "app/*"       # Qué copiamos (tu carpeta de la web)
-        target: "/home/ec2-user/app" # Dónde lo pegamos en el servidor
-        strip_components: 1       # Para que no cree una carpeta 'website' dentro de 'app'
+        source: "app/*"
+        target: "/home/ec2-user/app"
+        strip_components: 1
 
-    # 3. Conectarse por SSH y reiniciar el contenedor
+    # 3. Conectarse y Desplegar (Con limpieza de puertos incluida)
     - name: Desplegar en EC2
       uses: appleboy/ssh-action@master
       with:
@@ -35,17 +33,22 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          # Vamos a la carpeta donde acabamos de copiar los archivos
+          # Ir a la carpeta
           cd /home/ec2-user/app
           
-          # Construimos la nueva imagen de Docker (usando tu Dockerfile)
-          # La llamaremos 'mi-web-prod'
+          # Construir la nueva imagen
           sudo docker build -t mi-web-prod .
           
-          # Paramos y borramos el contenedor viejo (si existe)
-          # El '|| true' es un truco para que no de error si es la primera vez y no hay nada que borrar
+          # === LIMPIEZA DE PUERTOS (Crucial para evitar error 125) ===
+          
+          # 1. Matar el Nginx que creó Terraform al principio (el intruso)
+          sudo docker stop mi-nginx || true
+          sudo docker rm mi-nginx || true
+          
+          # 2. Matar contenedores viejos de despliegues anteriores
           sudo docker stop mi-web-container || true
           sudo docker rm mi-web-container || true
           
-          # Arrancamos el nuevo contenedor con la nueva versión
+          # === ARRANQUE ===
+          # Lanzar el nuevo contenedor en el puerto 80 limpio
           sudo docker run -d -p 80:80 --name mi-web-container mi-web-prod
