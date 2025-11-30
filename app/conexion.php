@@ -6,5 +6,3 @@
     $port = 3306;
 
     $conexion = new mysqli($servidor, $usuario, $password, "$database", $port);
-
-?>
