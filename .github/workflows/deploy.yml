@@ -23,7 +23,7 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
-        source: "website/*"       # Qué copiamos (tu carpeta de la web)
+        source: "app/*"       # Qué copiamos (tu carpeta de la web)
         target: "/home/ec2-user/app" # Dónde lo pegamos en el servidor
         strip_components: 1       # Para que no cree una carpeta 'website' dentro de 'app'
 
