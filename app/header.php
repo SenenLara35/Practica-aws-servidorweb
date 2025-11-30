@@ -1,5 +1,6 @@
 <?php
     // 1. INICIAR SESIÓN (Si no está iniciada ya)
+    ob_start();
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
