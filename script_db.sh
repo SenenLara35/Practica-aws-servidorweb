@@ -7,7 +7,7 @@ service docker start
 systemctl enable docker
 usermod -a -G docker ec2-user
 
-# 2. Arrancar el contenedor de Base de Datos (MySQL)
+# 2. Arrancar el cont enedor de Base de Datos (MySQL)
 # Definimos contraseña root y nombre de la base de datos
 docker run -d \
   --name base-de-datos \
