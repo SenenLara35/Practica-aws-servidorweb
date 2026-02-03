@@ -14,18 +14,18 @@ jobs:
     - name: Checkout del código
       uses: actions/checkout@v3
 
-    # 2. Copiar archivos (Corregido para buscar en la carpeta 'app')
+    # 2. Copiar archivos (Incluye Dockerfile si está dentro de 'app/')
     - name: Copiar archivos al servidor
       uses: appleboy/scp-action@master
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
-        source: "app/*"
+        source: "app/*"            # Copia todo el contenido de la carpeta app
         target: "/home/ec2-user/app"
-        strip_components: 1
+        strip_components: 1        # Importante: Elimina la carpeta 'app' de la ruta para dejar los archivos sueltos en el destino
 
-    # 3. Conectarse y Desplegar (Con limpieza de puertos incluida)
+    # 3. Conectarse, Instalar Docker (si hace falta) y Desplegar
     - name: Desplegar en EC2
       uses: appleboy/ssh-action@master
       with:
@@ -33,22 +33,39 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          # Ir a la carpeta
+          # === FASE 0: INSTALACIÓN AUTOMÁTICA DE DOCKER ===
+          # Esto comprueba si 'docker' existe. Si no, lo instala.
+          if ! command -v docker &> /dev/null
+          then
+              echo "Docker no detectado. Instalando..."
+              sudo yum update -y
+              # Intenta instalar docker (compatible con Amazon Linux 2 y 2023)
+              sudo amazon-linux-extras install docker -y || sudo yum install docker -y
+              sudo service docker start
+              sudo systemctl enable docker
+              sudo usermod -a -G docker ec2-user
+          else
+              echo "Docker ya está instalado. Continuando..."
+          fi
+
+          # === FASE 1: DESPLIEGUE ===
+          # Ir a la carpeta donde copiamos los archivos
           cd /home/ec2-user/app
           
+          # Verificar que el Dockerfile está ahí (para depuración)
+          ls -la Dockerfile
+          
           # Construir la nueva imagen
+          # Como estamos en la carpeta 'app', el punto '.' encontrará el Dockerfile ahí mismo
           sudo docker build -t mi-web-prod .
           
-          # === LIMPIEZA DE PUERTOS (Crucial para evitar error 125) ===
-          
-          # 1. Matar el Nginx que creó Terraform al principio (el intruso)
+          # === LIMPIEZA DE PUERTOS ===
+          # Limpiamos cualquier contenedor anterior para liberar el puerto 80
           sudo docker stop mi-nginx || true
           sudo docker rm mi-nginx || true
-          
-          # 2. Matar contenedores viejos de despliegues anteriores
           sudo docker stop mi-web-container || true
           sudo docker rm mi-web-container || true
           
           # === ARRANQUE ===
-          # Lanzar el nuevo contenedor en el puerto 80 limpio
+          # Lanzar el nuevo contenedor
           sudo docker run -d -p 80:80 --name mi-web-container mi-web-prod
